@@ -49,8 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let pacManPosition = { x: 9, y: 10 };
 
     function updatePacManPosition() {
-        pacMan.style.left = pacManPosition.x * cellSize + 'px';
-        pacMan.style.top = pacManPosition.y * cellSize + 'px';
+        const pacManCell = gameBoard.children[pacManPosition.y * 20 + pacManPosition.x];
+        const rect = pacManCell.getBoundingClientRect();
+        const boardRect = gameBoard.getBoundingClientRect();
+        pacMan.style.left = `${rect.left - boardRect.left + rect.width / 2}px`;
+        pacMan.style.top = `${rect.top - boardRect.top + rect.height / 2}px`;
     }
 
     updatePacManPosition();
@@ -84,3 +87,4 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePacManPosition();
     });
 });
+
