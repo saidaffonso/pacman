@@ -1,60 +1,86 @@
 document.addEventListener('DOMContentLoaded', () => {
     const gameBoard = document.getElementById('game-board');
+    const cellSize = 24;
+    const maze = [
+        // 20x20 grid: 0 = empty, 1 = wall, 2 = dot
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,1],
+        [1,2,1,1,1,1,2,1,2,1,1,2,1,2,1,1,1,1,2,1],
+        [1,2,1,1,1,1,2,1,2,2,2,2,1,2,1,1,1,1,2,1],
+        [1,2,2,2,2,2,2,1,1,1,1,1,1,2,2,2,2,2,2,1],
+        [1,1,1,1,1,1,2,1,2,2,2,2,1,2,1,1,1,1,1,1],
+        [1,2,2,2,2,1,2,1,2,1,1,2,1,2,1,2,2,2,2,1],
+        [1,2,1,1,2,1,2,1,2,1,1,2,1,2,1,1,2,1,2,1],
+        [1,2,2,1,2,2,2,2,2,1,1,2,2,2,2,1,2,2,2,1],
+        [1,1,2,1,2,1,1,1,1,1,1,1,1,1,2,1,2,1,1,1],
+        [1,2,2,1,2,1,2,2,2,0,0,2,2,2,2,1,2,2,2,1],
+        [1,2,1,1,2,1,2,1,1,1,1,1,1,1,2,1,1,1,2,1],
+        [1,2,2,1,2,2,2,1,2,2,2,2,1,2,2,1,2,2,2,1],
+        [1,1,2,1,1,1,2,1,2,1,1,2,1,2,1,1,2,1,1,1],
+        [1,2,2,2,2,2,2,1,2,1,1,2,1,2,2,2,2,2,2,1],
+        [1,2,1,1,1,1,2,1,2,1,1,2,1,1,1,1,1,1,2,1],
+        [1,2,1,1,1,1,2,1,2,2,2,2,1,2,1,1,1,1,2,1],
+        [1,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,1],
+        [1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    ];
+
+    // Criar o labirinto
+    maze.forEach((row, y) => {
+        row.forEach((cell, x) => {
+            const div = document.createElement('div');
+            div.classList.add('cell');
+            if (cell === 1) {
+                div.classList.add('wall');
+            } else if (cell === 2) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                div.appendChild(dot);
+            }
+            gameBoard.appendChild(div);
+        });
+    });
+
+    // Adicionar Pac-Man
     const pacMan = document.createElement('div');
     pacMan.classList.add('pac-man');
     gameBoard.appendChild(pacMan);
 
-    const food = document.createElement('div');
-    food.classList.add('food');
-    gameBoard.appendChild(food);
+    let pacManPosition = { x: 9, y: 10 };
 
-    // Inicializa Pac-Man e comida em posições aleatórias
-    pacMan.style.left = '100px';
-    pacMan.style.top = '100px';
-    placeFood();
+    function updatePacManPosition() {
+        pacMan.style.left = pacManPosition.x * cellSize + 'px';
+        pacMan.style.top = pacManPosition.y * cellSize + 'px';
+    }
 
-    // Controle do movimento de Pac-Man
-    document.addEventListener('keydown', movePacMan);
+    updatePacManPosition();
 
-    function movePacMan(event) {
-        const step = 10;
-        let left = parseInt(pacMan.style.left);
-        let top = parseInt(pacMan.style.top);
-
-        switch (event.key) {
+    // Movimento de Pac-Man
+    document.addEventListener('keydown', (e) => {
+        let { x, y } = pacManPosition;
+        switch (e.key) {
             case 'ArrowUp':
-                if (top - step >= 0) pacMan.style.top = top - step + 'px';
+                if (maze[y - 1][x] !== 1) y--;
                 break;
             case 'ArrowDown':
-                if (top + step <= 470) pacMan.style.top = top + step + 'px';
+                if (maze[y + 1][x] !== 1) y++;
                 break;
             case 'ArrowLeft':
-                if (left - step >= 0) pacMan.style.left = left - step + 'px';
+                if (maze[y][x - 1] !== 1) x--;
                 break;
             case 'ArrowRight':
-                if (left + step <= 470) pacMan.style.left = left + step + 'px';
+                if (maze[y][x + 1] !== 1) x++;
                 break;
         }
 
-        checkCollision();
-    }
-
-    // Posiciona a comida em local aleatório
-    function placeFood() {
-        food.style.left = Math.floor(Math.random() * 490) + 'px';
-        food.style.top = Math.floor(Math.random() * 490) + 'px';
-    }
-
-    // Verifica se Pac-Man colidiu com a comida
-    function checkCollision() {
-        const pacManRect = pacMan.getBoundingClientRect();
-        const foodRect = food.getBoundingClientRect();
-
-        if (pacManRect.left < foodRect.right &&
-            pacManRect.right > foodRect.left &&
-            pacManRect.top < foodRect.bottom &&
-            pacManRect.bottom > foodRect.top) {
-            placeFood();
+        // Comer dots
+        if (maze[y][x] === 2) {
+            maze[y][x] = 0;
+            const dot = gameBoard.children[y * 20 + x].querySelector('.dot');
+            if (dot) dot.remove();
         }
-    }
+
+        pacManPosition = { x, y };
+        updatePacManPosition();
+    });
 });
