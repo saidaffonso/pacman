@@ -6,4 +6,4 @@ Um jogo de Pac-Man simples desenvolvido com [tecnologia utilizada].
 
 1. Clone o repositório:
    ```bash
-   git clone (https://github.com/saidaffonso/pacman)
+   git clone [https://github.com/saidaffonso/pacman]
