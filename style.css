@@ -1,0 +1,32 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: black;
+    color: white;
+}
+
+#game-board {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+    background-color: navy;
+    border: 2px solid white;
+}
+
+.pac-man {
+    width: 30px;
+    height: 30px;
+    background-color: yellow;
+    position: absolute;
+    border-radius: 50%;
+    transition: left 0.1s, top 0.1s;
+}
+
+.food {
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    position: absolute;
+    border-radius: 50%;
+}
